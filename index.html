@@ -47,8 +47,14 @@
     <div class="container mx-auto px-4 py-8 max-w-md">
         <!-- Header -->
         <div class="text-center mb-8">
-            <div class="text-6xl mb-4 water-wave">💧</div>
-            <h1 class="text-3xl font-bold text-blue-900 mb-2">Hydration Tracker</h1>
+            <div class="flex justify-between items-center mb-4">
+                <div></div>
+                <div class="text-6xl water-wave">💧</div>
+                <button onclick="toggleLanguage()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1 rounded-lg text-sm font-medium transition-colors">
+                    <span id="langToggle">EN</span>
+                </button>
+            </div>
+            <h1 class="text-3xl font-bold text-blue-900 mb-2" data-ms="Penjejak Hidrasi" data-en="Hydration Tracker">Penjejak Hidrasi</h1>
             <p class="text-blue-600" id="currentDate"></p>
         </div>
 
@@ -103,7 +109,7 @@
         <div class="text-center mb-8">
             <div class="bg-white rounded-xl px-6 py-4 shadow-lg inline-block">
                 <span id="currentIntake" class="text-3xl font-bold text-blue-900">0</span>
-                <span class="text-lg text-blue-600">/ 8 glasses</span>
+                <span class="text-lg text-blue-600" data-ms="/ 8 gelas" data-en="/ 8 glasses">/ 8 gelas</span>
             </div>
             <div class="mt-3">
                 <span id="percentage" class="text-lg text-blue-500 font-medium">0%</span>
@@ -115,14 +121,14 @@
             <button onclick="addWater(1)" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200 relative overflow-hidden">
                 <div class="flex flex-col items-center">
                     <span class="text-2xl mb-1">🥤</span>
-                    <span>1 Glass</span>
+                    <span data-ms="1 Gelas" data-en="1 Glass">1 Gelas</span>
                     <span class="text-xs opacity-80">250ml</span>
                 </div>
             </button>
             <button onclick="addWater(2)" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200">
                 <div class="flex flex-col items-center">
                     <span class="text-2xl mb-1">🍶</span>
-                    <span>2 Glasses</span>
+                    <span data-ms="2 Gelas" data-en="2 Glasses">2 Gelas</span>
                     <span class="text-xs opacity-80">500ml</span>
                 </div>
             </button>
@@ -130,21 +136,21 @@
 
         <!-- Custom Amount -->
         <div class="bg-white rounded-xl p-6 shadow-lg mb-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Custom Amount</h3>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4" data-ms="Jumlah Tersuai" data-en="Custom Amount">Jumlah Tersuai</h3>
             <div class="flex gap-3">
-                <input type="number" id="customAmount" placeholder="Enter glasses" 
+                <input type="number" id="customAmount" data-ms-placeholder="Masukkan gelas" data-en-placeholder="Enter glasses" placeholder="Masukkan gelas" 
                        class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
-                <button onclick="addCustomWater()" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200">
-                    Add
+                <button onclick="addCustomWater()" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200" data-ms="Tambah" data-en="Add">
+                    Tambah
                 </button>
             </div>
         </div>
 
         <!-- Today's Log -->
         <div class="bg-white rounded-xl p-6 shadow-lg mb-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Today's Log</h3>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4" data-ms="Log Hari Ini" data-en="Today's Log">Log Hari Ini</h3>
             <div id="waterLog" class="space-y-2 max-h-32 overflow-y-auto">
-                <p class="text-gray-500 text-center py-4">No water logged yet today</p>
+                <p class="text-gray-500 text-center py-4" data-ms="Belum ada air dilog hari ini" data-en="No water logged yet today">Belum ada air dilog hari ini</p>
             </div>
         </div>
 
@@ -152,17 +158,17 @@
         <div class="grid grid-cols-2 gap-4 mb-6">
             <div class="bg-white rounded-xl p-4 shadow-lg text-center">
                 <div class="text-2xl font-bold text-blue-600" id="totalMl">0ml</div>
-                <div class="text-sm text-gray-600">Total Today</div>
+                <div class="text-sm text-gray-600" data-ms="Jumlah Hari Ini" data-en="Total Today">Jumlah Hari Ini</div>
             </div>
             <div class="bg-white rounded-xl p-4 shadow-lg text-center">
                 <div class="text-2xl font-bold text-green-600" id="streak">0</div>
-                <div class="text-sm text-gray-600">Day Streak</div>
+                <div class="text-sm text-gray-600" data-ms="Streak Hari" data-en="Day Streak">Streak Hari</div>
             </div>
         </div>
 
         <!-- Reset Button -->
-        <button onclick="resetDay()" class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-colors duration-200">
-            Reset Today
+        <button onclick="resetDay()" class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-colors duration-200" data-ms="Reset Hari Ini" data-en="Reset Today">
+            Reset Hari Ini
         </button>
     </div>
 
@@ -170,9 +176,70 @@
         let waterIntake = 0;
         let dailyGoal = 8;
         let waterLog = [];
+        let currentLang = 'ms'; // Default to Bahasa Melayu
+        
+        const translations = {
+            ms: {
+                congratsMessage: '🎉 Tahniah! Anda telah mencapai matlamat hidrasi harian!',
+                resetConfirm: 'Adakah anda pasti mahu reset kemajuan hari ini?',
+                noWaterLogged: 'Belum ada air dilog hari ini',
+                glass: 'gelas',
+                glasses: 'gelas'
+            },
+            en: {
+                congratsMessage: '🎉 Congratulations! You\'ve reached your daily hydration goal!',
+                resetConfirm: 'Are you sure you want to reset today\'s progress?',
+                noWaterLogged: 'No water logged yet today',
+                glass: 'glass',
+                glasses: 'glasses'
+            }
+        };
+        
+        function toggleLanguage() {
+            currentLang = currentLang === 'ms' ? 'en' : 'ms';
+            updateLanguage();
+            saveLanguage();
+        }
+        
+        function updateLanguage() {
+            document.getElementById('langToggle').textContent = currentLang === 'ms' ? 'EN' : 'MS';
+            
+            // Update all elements with data attributes
+            document.querySelectorAll('[data-ms]').forEach(element => {
+                if (currentLang === 'ms') {
+                    element.textContent = element.getAttribute('data-ms');
+                } else {
+                    element.textContent = element.getAttribute('data-en');
+                }
+            });
+            
+            // Update placeholder
+            const customInput = document.getElementById('customAmount');
+            if (currentLang === 'ms') {
+                customInput.placeholder = customInput.getAttribute('data-ms-placeholder');
+            } else {
+                customInput.placeholder = customInput.getAttribute('data-en-placeholder');
+            }
+            
+            // Update water log
+            updateWaterLog();
+        }
+        
+        function saveLanguage() {
+            localStorage.setItem('hydrationTrackerLang', currentLang);
+        }
+        
+        function loadLanguage() {
+            const saved = localStorage.getItem('hydrationTrackerLang');
+            if (saved) {
+                currentLang = saved;
+            }
+            updateLanguage();
+        }
         
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
+            loadLanguage();
             loadData();
             updateDisplay();
             setCurrentDate();
@@ -181,7 +248,8 @@
         function setCurrentDate() {
             const today = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', options);
+            const locale = currentLang === 'ms' ? 'ms-MY' : 'en-US';
+            document.getElementById('currentDate').textContent = today.toLocaleDateString(locale, options);
         }
         
         function addWater(glasses) {
@@ -205,7 +273,7 @@
             // Check if goal reached
             if (waterIntake >= dailyGoal && waterIntake - glasses < dailyGoal) {
                 setTimeout(() => {
-                    alert('🎉 Congratulations! You\'ve reached your daily hydration goal!');
+                    alert(translations[currentLang].congratsMessage);
                 }, 500);
             }
         }
@@ -263,20 +331,22 @@
             const logContainer = document.getElementById('waterLog');
             
             if (waterLog.length === 0) {
-                logContainer.innerHTML = '<p class="text-gray-500 text-center py-4">No water logged yet today</p>';
+                logContainer.innerHTML = `<p class="text-gray-500 text-center py-4">${translations[currentLang].noWaterLogged}</p>`;
                 return;
             }
             
-            logContainer.innerHTML = waterLog.map(entry => `
+            logContainer.innerHTML = waterLog.map(entry => {
+                const glassText = entry.glasses === 1 ? translations[currentLang].glass : translations[currentLang].glasses;
+                return `
                 <div class="flex justify-between items-center py-2 px-3 bg-blue-50 rounded-lg">
-                    <span class="text-sm text-gray-700">${entry.glasses} glass${entry.glasses !== 1 ? 'es' : ''} (${entry.ml}ml)</span>
+                    <span class="text-sm text-gray-700">${entry.glasses} ${glassText} (${entry.ml}ml)</span>
                     <span class="text-xs text-gray-500">${entry.time}</span>
                 </div>
-            `).join('');
+            `;}).join('');
         }
         
         function resetDay() {
-            if (confirm('Are you sure you want to reset today\'s progress?')) {
+            if (confirm(translations[currentLang].resetConfirm)) {
                 waterIntake = 0;
                 waterLog = [];
                 
@@ -285,7 +355,7 @@
                 document.getElementById('percentage').textContent = '0%';
                 document.getElementById('totalMl').textContent = '0ml';
                 document.getElementById('streak').textContent = '0';
-                document.getElementById('waterLog').innerHTML = '<p class="text-gray-500 text-center py-4">No water logged yet today</p>';
+                document.getElementById('waterLog').innerHTML = `<p class="text-gray-500 text-center py-4">${translations[currentLang].noWaterLogged}</p>`;
                 
                 // Reset water bottle to full
                 const waterFill = document.getElementById('waterFill');
