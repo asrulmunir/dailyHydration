@@ -1,0 +1,21 @@
+{
+  "name": "Daily Hydration Tracker",
+  "short_name": "Hydration",
+  "description": "Track your daily water intake with an animated bottle",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f0f9ff",
+  "theme_color": "#0ea5e9",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiMwZWE1ZTkiLz4KPHN2ZyB4PSI0OCIgeT0iMzIiIHdpZHRoPSI5NiIgaGVpZ2h0PSIxMjgiIHZpZXdCb3g9IjAgMCA5NiAxMjgiIGZpbGw9Im5vbmUiPgo8cGF0aCBkPSJNNDggMTI4QzQ4IDEyOCA0OCA5NiA0OCA4MEMzMiA2NCAzMiA0OCAzMiAzMkMzMiAxNiA0OCAwIDQ4IDBDNDggMCA2NCAxNiA2NCAxNkM2NCAxNiA2NCAzMiA2NCAzMkM2NCA0OCA2NCA2NCA0OCA4MEM0OCA5NiA0OCAxMjggNDggMTI4WiIgZmlsbD0iI2ZmZmZmZiIvPgo8L3N2Zz4KPC9zdmc+",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iNjQiIGZpbGw9IiMwZWE1ZTkiLz4KPHN2ZyB4PSIxMjgiIHk9Ijg2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjM0MCIgdmlld0JveD0iMCAwIDI1NiAzNDAiIGZpbGw9Im5vbmUiPgo8cGF0aCBkPSJNMTI4IDM0MEMxMjggMzQwIDEyOCAyNTYgMTI4IDIxM0M4NSAxNzAgODUgMTI4IDg1IDg1Qzg1IDQyIDEyOCAwIDEyOCAwQzEyOCAwIDE3MCA0MiAxNzAgNDJDMTcwIDQyIDE3MCA4NSAxNzAgODVDMTcwIDEyOCAxNzAgMTcwIDEyOCAyMTNDMTI4IDI1NiAxMjggMzQwIDEyOCAzNDBaIiBmaWxsPSIjZmZmZmZmIi8+Cjwvc3ZnPgo8L3N2Zz4K",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
