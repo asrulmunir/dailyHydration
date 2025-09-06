@@ -176,6 +176,7 @@
         let dailyGoal = 8;
         let waterLog = [];
         let currentLang = 'ms'; // Default to Bahasa Melayu
+        let reminderInterval;
         
         const translations = {
             ms: {
@@ -183,14 +184,20 @@
                 resetConfirm: 'Adakah anda pasti mahu reset kemajuan hari ini?',
                 noWaterLogged: 'Belum ada air dilog hari ini',
                 glass: 'gelas',
-                glasses: 'gelas'
+                glasses: 'gelas',
+                reminderTitle: 'Masa Minum Air! 💧',
+                reminderBody: 'Jangan lupa minum air untuk kekal sihat dan terhidrasi.',
+                notificationPermission: 'Benarkan notifikasi untuk peringatan minum air setiap jam?'
             },
             en: {
                 congratsMessage: '🎉 Congratulations! You\'ve reached your daily hydration goal!',
                 resetConfirm: 'Are you sure you want to reset today\'s progress?',
                 noWaterLogged: 'No water logged yet today',
                 glass: 'glass',
-                glasses: 'glasses'
+                glasses: 'glasses',
+                reminderTitle: 'Time to Drink Water! 💧',
+                reminderBody: 'Don\'t forget to drink water to stay healthy and hydrated.',
+                notificationPermission: 'Allow notifications for hourly water reminders?'
             }
         };
         
@@ -242,7 +249,52 @@
             loadData();
             updateDisplay();
             setCurrentDate();
+            requestNotificationPermission();
         });
+        
+        function requestNotificationPermission() {
+            if ('Notification' in window && 'serviceWorker' in navigator) {
+                if (Notification.permission === 'default') {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            startHourlyReminders();
+                        }
+                    });
+                } else if (Notification.permission === 'granted') {
+                    startHourlyReminders();
+                }
+            }
+        }
+        
+        function startHourlyReminders() {
+            // Clear any existing interval
+            if (reminderInterval) {
+                clearInterval(reminderInterval);
+            }
+            
+            // Set reminder every hour (3600000 ms)
+            reminderInterval = setInterval(() => {
+                showWaterReminder();
+            }, 3600000);
+            
+            // Also set initial reminder in 1 hour from now
+            setTimeout(() => {
+                showWaterReminder();
+            }, 3600000);
+        }
+        
+        function showWaterReminder() {
+            if (Notification.permission === 'granted') {
+                new Notification(translations[currentLang].reminderTitle, {
+                    body: translations[currentLang].reminderBody,
+                    icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiMwZWE1ZTkiLz4KPHN2ZyB4PSI0OCIgeT0iMzIiIHdpZHRoPSI5NiIgaGVpZ2h0PSIxMjgiIHZpZXdCb3g9IjAgMCA5NiAxMjgiIGZpbGw9Im5vbmUiPgo8cGF0aCBkPSJNNDggMTI4QzQ4IDEyOCA0OCA5NiA0OCA4MEMzMiA2NCAzMiA0OCAzMiAzMkMzMiAxNiA0OCAwIDQ4IDBDNDggMCA2NCAxNiA2NCAxNkM2NCAxNiA2NCAzMiA2NCAzMkM2NCA0OCA2NCA2NCA0OCA4MEM0OCA5NiA0OCAxMjggNDggMTI4WiIgZmlsbD0iI2ZmZmZmZiIvPgo8L3N2Zz4KPC9zdmc+',
+                    badge: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiMwZWE1ZTkiLz4KPHN2ZyB4PSI0OCIgeT0iMzIiIHdpZHRoPSI5NiIgaGVpZ2h0PSIxMjgiIHZpZXdCb3g9IjAgMCA5NiAxMjgiIGZpbGw9Im5vbmUiPgo8cGF0aCBkPSJNNDggMTI4QzQ4IDEyOCA0OCA5NiA0OCA4MEMzMiA2NCAzMiA0OCAzMiAzMkMzMiAxNiA0OCAwIDQ4IDBDNDggMCA2NCAxNiA2NCAxNkM2NCAxNiA2NCAzMiA2NCAzMkM2NCA0OCA2NCA2NCA0OCA4MEM0OCA5NiA0OCAxMjggNDggMTI4WiIgZmlsbD0iI2ZmZmZmZiIvPgo8L3N2Zz4KPC9zdmc+',
+                    tag: 'hydration-reminder',
+                    requireInteraction: false,
+                    silent: false
+                });
+            }
+        }
         
         function setCurrentDate() {
             const today = new Date();
