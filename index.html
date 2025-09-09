@@ -217,14 +217,14 @@
 
         <!-- Quick Add Buttons -->
         <div class="grid grid-cols-2 gap-4 mb-6">
-            <button onclick="addWater(1)" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200 relative overflow-hidden">
+            <button onclick="addWater(1, event)" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200 relative overflow-hidden">
                 <div class="flex flex-col items-center">
                     <span class="text-2xl mb-1" id="container1Icon">🥤</span>
                     <span>1 <span id="container1Unit" data-ms="Gelas" data-en="Glass">Gelas</span></span>
                     <span class="text-xs opacity-80" id="container1Size">250ml</span>
                 </div>
             </button>
-            <button onclick="addWater(2)" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200">
+            <button onclick="addWater(2, event)" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200">
                 <div class="flex flex-col items-center">
                     <span class="text-2xl mb-1" id="container2Icon">🍶</span>
                     <span>2 <span id="container2Unit" data-ms="Gelas" data-en="Glasses">Gelas</span></span>
@@ -423,7 +423,7 @@
             document.getElementById('currentDate').textContent = today.toLocaleDateString(locale, options);
         }
         
-        function addWater(glasses) {
+        function addWater(glasses, event) {
             lastDrink = {
                 glasses: glasses,
                 time: new Date().toLocaleTimeString(currentLang === 'ms' ? 'ms-MY' : 'en-US', { hour: '2-digit', minute: '2-digit' }),
@@ -437,8 +437,10 @@
             playSound('drink');
             
             // Add ripple effect
-            event.target.classList.add('ripple');
-            setTimeout(() => event.target.classList.remove('ripple'), 600);
+            if (event && event.target) {
+                event.target.classList.add('ripple');
+                setTimeout(() => event.target.classList.remove('ripple'), 600);
+            }
             
             // Show undo button
             showUndoButton();
@@ -464,7 +466,7 @@
             const amount = parseFloat(customInput.value);
             
             if (amount && amount > 0) {
-                addWater(amount);
+                addWater(amount, null);
                 customInput.value = '';
             }
         }
