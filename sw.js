@@ -1,9 +1,9 @@
-const CACHE_NAME = 'hydration-tracker-v2';
+const CACHE_NAME = 'hydration-tracker-v1';
 const urlsToCache = [
   './',
   './index.html',
-  './styles.css',
-  './manifest.json'
+  './manifest.json',
+  'https://cdn.tailwindcss.com'
 ];
 
 self.addEventListener('install', event => {
