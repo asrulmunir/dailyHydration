@@ -41,9 +41,34 @@
             0% { transform: scale(0); opacity: 1; }
             100% { transform: scale(4); opacity: 0; }
         }
+
+        .refill-animation {
+            animation: refill 1s ease-in-out;
+        }
+
+        @keyframes refill {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); filter: brightness(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .undo-slide {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            0% { transform: translateX(-100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Theme Classes */
+        .theme-blue { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
+        .theme-green { background: linear-gradient(135deg, #dcfce7, #bbf7d0); }
+        .theme-purple { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); }
+        .theme-dark { background: linear-gradient(135deg, #374151, #1f2937); color: white; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-cyan-100 min-h-screen">
+<body class="theme-blue min-h-screen transition-all duration-500" id="mainBody">
     <div class="container mx-auto px-4 py-8 max-w-md">
         <!-- Header -->
         <div class="text-center mb-8">
@@ -58,13 +83,83 @@
                     </button>
                 </div>
             </div>
-            <h1 class="text-3xl font-bold text-blue-900 mb-2" data-ms="Penjejak Hidrasi" data-en="Hydration Tracker">Penjejak Hidrasi</h1>
+            <h1 class="text-3xl font-bold text-blue-900 mb-2" data-ms="Penjejak Hidrasi" data-en="Hydration Tracker" id="mainTitle">Penjejak Hidrasi</h1>
             <p class="text-blue-600" id="currentDate"></p>
+        </div>
+
+        <!-- Settings Toggle -->
+        <div class="text-center mb-4">
+            <button onclick="toggleSettings()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm transition-colors duration-200">
+                ⚙️ <span data-ms="Tetapan" data-en="Settings">Tetapan</span>
+            </button>
+        </div>
+
+        <!-- Settings Panel -->
+        <div id="settingsPanel" class="bg-white rounded-xl p-6 shadow-lg mb-6 hidden">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4" data-ms="Personalisasi" data-en="Personalization">Personalisasi</h3>
+            
+            <!-- Daily Goal -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2" data-ms="Matlamat Harian" data-en="Daily Goal">Matlamat Harian</label>
+                <div class="flex gap-2">
+                    <input type="number" id="dailyGoalInput" min="1" max="20" value="8" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                    <select id="goalUnit" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                        <option value="glasses" data-ms="gelas" data-en="glasses">gelas</option>
+                        <option value="liters" data-ms="liter" data-en="liters">liter</option>
+                        <option value="bottles" data-ms="botol" data-en="bottles">botol</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Container Size -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2" data-ms="Saiz Bekas" data-en="Container Size">Saiz Bekas</label>
+                <select id="containerSize" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                    <option value="250">Gelas (250ml)</option>
+                    <option value="330">Tin (330ml)</option>
+                    <option value="500">Botol (500ml)</option>
+                    <option value="750">Botol Besar (750ml)</option>
+                    <option value="1000">Liter (1000ml)</option>
+                </select>
+            </div>
+
+            <!-- Theme -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2" data-ms="Tema" data-en="Theme">Tema</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="setTheme('blue')" class="theme-btn bg-blue-500 text-white px-3 py-2 rounded-lg text-sm">💧 <span data-ms="Biru Lautan" data-en="Ocean Blue">Biru Lautan</span></button>
+                    <button onclick="setTheme('green')" class="theme-btn bg-green-500 text-white px-3 py-2 rounded-lg text-sm">🌿 <span data-ms="Hijau Segar" data-en="Fresh Green">Hijau Segar</span></button>
+                    <button onclick="setTheme('purple')" class="theme-btn bg-purple-500 text-white px-3 py-2 rounded-lg text-sm">🔮 <span data-ms="Ungu" data-en="Purple">Ungu</span></button>
+                    <button onclick="setTheme('dark')" class="theme-btn bg-gray-800 text-white px-3 py-2 rounded-lg text-sm">🌙 <span data-ms="Mod Gelap" data-en="Dark Mode">Mod Gelap</span></button>
+                </div>
+            </div>
+
+            <!-- Sound Effects -->
+            <div class="mb-4">
+                <label class="flex items-center">
+                    <input type="checkbox" id="soundEffects" class="mr-2" checked>
+                    <span class="text-sm font-medium text-gray-700" data-ms="Kesan Bunyi" data-en="Sound Effects">Kesan Bunyi</span>
+                </label>
+            </div>
+
+            <button onclick="saveSettings()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold transition-colors duration-200" data-ms="Simpan Tetapan" data-en="Save Settings">
+                Simpan Tetapan
+            </button>
+        </div>
+
+        <!-- Undo Button -->
+        <div id="undoContainer" class="mb-4 hidden">
+            <div class="bg-orange-100 border border-orange-300 rounded-lg p-3 flex items-center justify-between undo-slide">
+                <span class="text-orange-800 text-sm" data-ms="Minuman terakhir ditambah" data-en="Last drink added">Minuman terakhir ditambah</span>
+                <button onclick="undoLastDrink()" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded text-sm transition-colors duration-200" data-ms="Batal" data-en="Undo">
+                    Batal
+                </button>
+            </div>
         </div>
 
         <!-- Water Bottle Animation -->
         <div class="relative mb-6 flex justify-center">
-            <div class="relative">
+            <div class="relative" id="bottleContainer">
                 <!-- Bottle SVG -->
                 <svg width="120" height="200" viewBox="0 0 120 200" class="drop-shadow-lg">
                     <!-- Bottle outline -->
@@ -113,7 +208,7 @@
         <div class="text-center mb-8">
             <div class="bg-white rounded-xl px-6 py-4 shadow-lg inline-block">
                 <span id="currentIntake" class="text-3xl font-bold text-blue-900">0</span>
-                <span class="text-lg text-blue-600" data-ms="/ 8 gelas" data-en="/ 8 glasses">/ 8 gelas</span>
+                <span class="text-lg text-blue-600">/ <span id="goalDisplay">8</span> <span id="unitDisplay" data-ms="gelas" data-en="glasses">gelas</span></span>
             </div>
             <div class="mt-3">
                 <span id="percentage" class="text-lg text-blue-500 font-medium">0%</span>
@@ -124,16 +219,16 @@
         <div class="grid grid-cols-2 gap-4 mb-6">
             <button onclick="addWater(1)" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200 relative overflow-hidden">
                 <div class="flex flex-col items-center">
-                    <span class="text-2xl mb-1">🥤</span>
-                    <span data-ms="1 Gelas" data-en="1 Glass">1 Gelas</span>
-                    <span class="text-xs opacity-80">250ml</span>
+                    <span class="text-2xl mb-1" id="container1Icon">🥤</span>
+                    <span>1 <span id="container1Unit" data-ms="Gelas" data-en="Glass">Gelas</span></span>
+                    <span class="text-xs opacity-80" id="container1Size">250ml</span>
                 </div>
             </button>
             <button onclick="addWater(2)" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200">
                 <div class="flex flex-col items-center">
-                    <span class="text-2xl mb-1">🍶</span>
-                    <span data-ms="2 Gelas" data-en="2 Glasses">2 Gelas</span>
-                    <span class="text-xs opacity-80">500ml</span>
+                    <span class="text-2xl mb-1" id="container2Icon">🍶</span>
+                    <span>2 <span id="container2Unit" data-ms="Gelas" data-en="Glasses">Gelas</span></span>
+                    <span class="text-xs opacity-80" id="container2Size">500ml</span>
                 </div>
             </button>
         </div>
@@ -182,6 +277,10 @@
         let waterLog = [];
         let currentLang = 'ms'; // Default to Bahasa Melayu
         let reminderInterval;
+        let lastDrink = null;
+        let containerSize = 250; // ml
+        let currentTheme = 'blue';
+        let soundEnabled = true;
         
         const translations = {
             ms: {
@@ -227,13 +326,19 @@
             // Update placeholder
             const customInput = document.getElementById('customAmount');
             if (currentLang === 'ms') {
-                customInput.placeholder = customInput.getAttribute('data-ms-placeholder');
+                customInput.placeholder = customInput.getAttribute('data-ms-placeholder') || 'Masukkan gelas';
             } else {
-                customInput.placeholder = customInput.getAttribute('data-en-placeholder');
+                customInput.placeholder = customInput.getAttribute('data-en-placeholder') || 'Enter glasses';
             }
+            
+            // Update button labels
+            updateButtonLabels();
             
             // Update water log
             updateWaterLog();
+            
+            // Update date
+            setCurrentDate();
         }
         
         function saveLanguage() {
@@ -251,6 +356,7 @@
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
             loadLanguage();
+            loadSettings();
             loadData();
             updateDisplay();
             setCurrentDate();
@@ -318,19 +424,24 @@
         }
         
         function addWater(glasses) {
-            waterIntake += glasses;
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-            
-            waterLog.unshift({
+            lastDrink = {
                 glasses: glasses,
-                time: timeString,
-                ml: glasses * 250
-            });
+                time: new Date().toLocaleTimeString(currentLang === 'ms' ? 'ms-MY' : 'en-US', { hour: '2-digit', minute: '2-digit' }),
+                ml: glasses * containerSize
+            };
+            
+            waterIntake += glasses;
+            waterLog.unshift(lastDrink);
+            
+            // Play sound effect
+            playSound('drink');
             
             // Add ripple effect
             event.target.classList.add('ripple');
             setTimeout(() => event.target.classList.remove('ripple'), 600);
+            
+            // Show undo button
+            showUndoButton();
             
             updateDisplay();
             saveData();
@@ -338,6 +449,11 @@
             // Check if goal reached
             if (waterIntake >= dailyGoal && waterIntake - glasses < dailyGoal) {
                 setTimeout(() => {
+                    playSound('goal');
+                    document.getElementById('bottleContainer').classList.add('refill-animation');
+                    setTimeout(() => {
+                        document.getElementById('bottleContainer').classList.remove('refill-animation');
+                    }, 1000);
                     alert(translations[currentLang].congratsMessage);
                 }, 500);
             }
@@ -382,7 +498,7 @@
             }
             
             // Update total ml
-            document.getElementById('totalMl').textContent = Math.round(waterIntake * 250) + 'ml';
+            document.getElementById('totalMl').textContent = Math.round(waterIntake * containerSize) + 'ml';
             
             // Update log
             updateWaterLog();
@@ -401,7 +517,8 @@
             }
             
             logContainer.innerHTML = waterLog.map(entry => {
-                const glassText = entry.glasses === 1 ? translations[currentLang].glass : translations[currentLang].glasses;
+                const containerName = getContainerName().toLowerCase();
+                const glassText = entry.glasses === 1 ? containerName : containerName + (currentLang === 'ms' ? '' : 's');
                 return `
                 <div class="flex justify-between items-center py-2 px-3 bg-blue-50 rounded-lg">
                     <span class="text-sm text-gray-700">${entry.glasses} ${glassText} (${entry.ml}ml)</span>
@@ -414,6 +531,10 @@
             if (confirm(translations[currentLang].resetConfirm)) {
                 waterIntake = 0;
                 waterLog = [];
+                lastDrink = null;
+                
+                // Hide undo button
+                document.getElementById('undoContainer').classList.add('hidden');
                 
                 // Immediately reset all display elements
                 document.getElementById('currentIntake').textContent = '0';
@@ -467,6 +588,161 @@
                 addCustomWater();
             }
         });
+
+        // New functions for enhanced features
+        function playSound(type) {
+            if (!soundEnabled) return;
+            
+            // Create audio context for sound effects
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            if (type === 'drink') {
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+            } else if (type === 'goal') {
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1);
+                oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2);
+            }
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
+
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        function setTheme(theme) {
+            currentTheme = theme;
+            const body = document.getElementById('mainBody');
+            const title = document.getElementById('mainTitle');
+            
+            // Remove all theme classes
+            body.className = body.className.replace(/theme-\w+/g, '');
+            
+            // Add new theme
+            body.classList.add(`theme-${theme}`);
+            
+            // Update title color based on theme
+            if (theme === 'dark') {
+                title.className = 'text-3xl font-bold text-white mb-2';
+            } else {
+                title.className = 'text-3xl font-bold text-blue-900 mb-2';
+            }
+        }
+
+        function saveSettings() {
+            const goal = parseInt(document.getElementById('dailyGoalInput').value);
+            const unit = document.getElementById('goalUnit').value;
+            const size = parseInt(document.getElementById('containerSize').value);
+            const sound = document.getElementById('soundEffects').checked;
+            
+            dailyGoal = goal;
+            containerSize = size;
+            soundEnabled = sound;
+            
+            // Update display
+            document.getElementById('goalDisplay').textContent = goal;
+            updateLanguage(); // This will update the unit display
+            
+            // Update button labels
+            updateButtonLabels();
+            
+            // Save to localStorage
+            const settings = {
+                dailyGoal,
+                containerSize,
+                currentTheme,
+                soundEnabled,
+                unit
+            };
+            localStorage.setItem('hydrationSettings', JSON.stringify(settings));
+            
+            // Hide settings panel
+            document.getElementById('settingsPanel').classList.add('hidden');
+            
+            // Update display
+            updateDisplay();
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('hydrationSettings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                dailyGoal = settings.dailyGoal || 8;
+                containerSize = settings.containerSize || 250;
+                currentTheme = settings.currentTheme || 'blue';
+                soundEnabled = settings.soundEnabled !== false;
+                
+                // Update UI
+                document.getElementById('dailyGoalInput').value = dailyGoal;
+                document.getElementById('containerSize').value = containerSize;
+                document.getElementById('soundEffects').checked = soundEnabled;
+                document.getElementById('goalDisplay').textContent = dailyGoal;
+                
+                setTheme(currentTheme);
+                updateButtonLabels();
+            }
+        }
+
+        function updateButtonLabels() {
+            const containerName = getContainerName();
+            const containerIcon = getContainerIcon();
+            
+            document.getElementById('container1Icon').textContent = containerIcon;
+            document.getElementById('container1Size').textContent = containerSize + 'ml';
+            
+            document.getElementById('container2Icon').textContent = containerIcon;
+            document.getElementById('container2Size').textContent = (containerSize * 2) + 'ml';
+        }
+
+        function getContainerName() {
+            if (containerSize <= 250) return currentLang === 'ms' ? 'Gelas' : 'Glass';
+            if (containerSize <= 350) return currentLang === 'ms' ? 'Tin' : 'Can';
+            if (containerSize <= 600) return currentLang === 'ms' ? 'Botol' : 'Bottle';
+            if (containerSize <= 800) return currentLang === 'ms' ? 'Botol Besar' : 'Large Bottle';
+            return currentLang === 'ms' ? 'Liter' : 'Liter';
+        }
+
+        function getContainerIcon() {
+            if (containerSize <= 250) return '🥤';
+            if (containerSize <= 350) return '🥫';
+            if (containerSize <= 600) return '🍶';
+            if (containerSize <= 800) return '🍼';
+            return '🧴';
+        }
+
+        function showUndoButton() {
+            const undoContainer = document.getElementById('undoContainer');
+            undoContainer.classList.remove('hidden');
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                undoContainer.classList.add('hidden');
+            }, 5000);
+        }
+
+        function undoLastDrink() {
+            if (lastDrink) {
+                waterIntake -= lastDrink.glasses;
+                waterLog.shift(); // Remove first item (most recent)
+                lastDrink = null;
+                
+                document.getElementById('undoContainer').classList.add('hidden');
+                updateDisplay();
+                saveData();
+            }
+        }
 
         // Register service worker
         if ('serviceWorker' in navigator) {

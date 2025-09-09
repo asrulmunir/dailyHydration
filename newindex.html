@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Hydration Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {}
+            }
+        }
+    </script>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; }
+        
+        .water-wave {
+            animation: wave 2s ease-in-out infinite;
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .glass-fill {
+            transition: height 0.5s ease-in-out;
+        }
+        
+        .ripple {
+            animation: ripple 0.6s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+
+        .refill-animation {
+            animation: refill 1s ease-in-out;
+        }
+
+        @keyframes refill {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); filter: brightness(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .undo-slide {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            0% { transform: translateX(-100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Theme Classes */
+        .theme-blue { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
+        .theme-green { background: linear-gradient(135deg, #dcfce7, #bbf7d0); }
+        .theme-purple { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); }
+        .theme-dark { background: linear-gradient(135deg, #374151, #1f2937); color: white; }
+    </style>
+</head>
+<body class="theme-blue min-h-screen transition-all duration-500" id="mainBody">
+    <div class="container mx-auto px-4 py-8 max-w-md">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="text-6xl mb-4 water-wave">💧</div>
+            <h1 class="text-3xl font-bold text-blue-900 mb-2" id="mainTitle">Hydration Tracker</h1>
+            <p class="text-blue-600" id="currentDate"></p>
+        </div>
+
+        <!-- Settings Toggle -->
+        <div class="text-center mb-4">
+            <button onclick="toggleSettings()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm transition-colors duration-200">
+                ⚙️ Settings
+            </button>
+        </div>
+
+        <!-- Settings Panel -->
+        <div id="settingsPanel" class="bg-white rounded-xl p-6 shadow-lg mb-6 hidden">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Personalization</h3>
+            
+            <!-- Daily Goal -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Daily Goal</label>
+                <div class="flex gap-2">
+                    <input type="number" id="dailyGoalInput" min="1" max="20" value="8" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                    <select id="goalUnit" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                        <option value="glasses">glasses</option>
+                        <option value="liters">liters</option>
+                        <option value="bottles">bottles</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Container Size -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Container Size</label>
+                <select id="containerSize" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                    <option value="250">Glass (250ml)</option>
+                    <option value="330">Can (330ml)</option>
+                    <option value="500">Bottle (500ml)</option>
+                    <option value="750">Large Bottle (750ml)</option>
+                    <option value="1000">Liter (1000ml)</option>
+                </select>
+            </div>
+
+            <!-- Theme -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Theme</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="setTheme('blue')" class="theme-btn bg-blue-500 text-white px-3 py-2 rounded-lg text-sm">💧 Ocean Blue</button>
+                    <button onclick="setTheme('green')" class="theme-btn bg-green-500 text-white px-3 py-2 rounded-lg text-sm">🌿 Fresh Green</button>
+                    <button onclick="setTheme('purple')" class="theme-btn bg-purple-500 text-white px-3 py-2 rounded-lg text-sm">🔮 Purple</button>
+                    <button onclick="setTheme('dark')" class="theme-btn bg-gray-800 text-white px-3 py-2 rounded-lg text-sm">🌙 Dark Mode</button>
+                </div>
+            </div>
+
+            <!-- Sound Effects -->
+            <div class="mb-4">
+                <label class="flex items-center">
+                    <input type="checkbox" id="soundEffects" class="mr-2" checked>
+                    <span class="text-sm font-medium text-gray-700">Sound Effects</span>
+                </label>
+            </div>
+
+            <button onclick="saveSettings()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold transition-colors duration-200">
+                Save Settings
+            </button>
+        </div>
+
+        <!-- Undo Button -->
+        <div id="undoContainer" class="mb-4 hidden">
+            <div class="bg-orange-100 border border-orange-300 rounded-lg p-3 flex items-center justify-between undo-slide">
+                <span class="text-orange-800 text-sm">Last drink added</span>
+                <button onclick="undoLastDrink()" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded text-sm transition-colors duration-200">
+                    Undo
+                </button>
+            </div>
+        </div>
+
+        <!-- Water Bottle Animation -->
+        <div class="relative mb-6 flex justify-center">
+            <div class="relative" id="bottleContainer">
+                <!-- Bottle SVG -->
+                <svg width="120" height="200" viewBox="0 0 120 200" class="drop-shadow-lg">
+                    <!-- Bottle outline -->
+                    <defs>
+                        <linearGradient id="bottleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#f0f9ff;stop-opacity:0.8" />
+                            <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.9" />
+                            <stop offset="100%" style="stop-color:#e0f2fe;stop-opacity:0.8" />
+                        </linearGradient>
+                        <linearGradient id="waterGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:0.8" />
+                            <stop offset="50%" style="stop-color:#38bdf8;stop-opacity:0.9" />
+                            <stop offset="100%" style="stop-color:#0284c7;stop-opacity:0.8" />
+                        </linearGradient>
+                        <clipPath id="bottleClip">
+                            <path d="M35 40 L35 170 Q35 180 45 180 L75 180 Q85 180 85 170 L85 40 Q85 35 80 35 L75 35 L75 25 Q75 20 70 20 L50 20 Q45 20 45 25 L45 35 L40 35 Q35 35 35 40 Z"/>
+                        </clipPath>
+                    </defs>
+                    
+                    <!-- Bottle body -->
+                    <path d="M35 40 L35 170 Q35 180 45 180 L75 180 Q85 180 85 170 L85 40 Q85 35 80 35 L75 35 L75 25 Q75 20 70 20 L50 20 Q45 20 45 25 L45 35 L40 35 Q35 35 35 40 Z" 
+                          fill="url(#bottleGradient)" stroke="#cbd5e1" stroke-width="2"/>
+                    
+                    <!-- Bottle cap -->
+                    <rect x="47" y="15" width="26" height="10" rx="3" fill="#64748b" stroke="#475569" stroke-width="1"/>
+                    
+                    <!-- Water fill -->
+                    <rect id="waterFill" x="37" y="38" width="46" height="140" fill="url(#waterGradient)" 
+                          clip-path="url(#bottleClip)" style="transition: height 0.8s ease-in-out, y 0.8s ease-in-out"/>
+                    
+                    <!-- Water surface animation -->
+                    <ellipse id="waterSurface" cx="60" cy="38" rx="21" ry="3" fill="#0ea5e9" opacity="0.6" 
+                             style="transition: cy 0.8s ease-in-out" clip-path="url(#bottleClip)">
+                        <animate attributeName="ry" values="2;4;2" dur="2s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2s" repeatCount="indefinite"/>
+                    </ellipse>
+                    
+                    <!-- Bottle highlights -->
+                    <path d="M42 45 Q42 40 47 40 L47 45" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.6"/>
+                    <path d="M42 60 L42 80" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.4"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Progress Stats -->
+        <div class="text-center mb-8">
+            <div class="bg-white rounded-xl px-6 py-4 shadow-lg inline-block">
+                <span id="currentIntake" class="text-3xl font-bold text-blue-900">0</span>
+                <span class="text-lg text-blue-600">/ <span id="goalDisplay">8</span> <span id="unitDisplay">glasses</span></span>
+            </div>
+            <div class="mt-3">
+                <span id="percentage" class="text-lg text-blue-500 font-medium">0%</span>
+            </div>
+        </div>
+
+        <!-- Quick Add Buttons -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <button onclick="addWater(1)" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200 relative overflow-hidden">
+                <div class="flex flex-col items-center">
+                    <span class="text-2xl mb-1" id="container1Icon">🥤</span>
+                    <span>1 <span id="container1Unit">Glass</span></span>
+                    <span class="text-xs opacity-80" id="container1Size">250ml</span>
+                </div>
+            </button>
+            <button onclick="addWater(2)" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200">
+                <div class="flex flex-col items-center">
+                    <span class="text-2xl mb-1" id="container2Icon">🍶</span>
+                    <span>2 <span id="container2Unit">Glasses</span></span>
+                    <span class="text-xs opacity-80" id="container2Size">500ml</span>
+                </div>
+            </button>
+        </div>
+
+        <!-- Custom Amount -->
+        <div class="bg-white rounded-xl p-6 shadow-lg mb-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Custom Amount</h3>
+            <div class="flex gap-3">
+                <input type="number" id="customAmount" placeholder="Enter amount" 
+                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                <button onclick="addCustomWater()" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200">
+                    Add
+                </button>
+            </div>
+        </div>
+
+        <!-- Today's Log -->
+        <div class="bg-white rounded-xl p-6 shadow-lg mb-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Today's Log</h3>
+            <div id="waterLog" class="space-y-2 max-h-32 overflow-y-auto">
+                <p class="text-gray-500 text-center py-4">No water logged yet today</p>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="bg-white rounded-xl p-4 shadow-lg text-center">
+                <div class="text-2xl font-bold text-blue-600" id="totalMl">0ml</div>
+                <div class="text-sm text-gray-600">Total Today</div>
+            </div>
+            <div class="bg-white rounded-xl p-4 shadow-lg text-center">
+                <div class="text-2xl font-bold text-green-600" id="streak">0</div>
+                <div class="text-sm text-gray-600">Day Streak</div>
+            </div>
+        </div>
+
+        <!-- Reset Button -->
+        <button onclick="resetDay()" class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-colors duration-200">
+            Reset Today
+        </button>
+    </div>
+
+    <script>
+        let waterIntake = 0;
+        let dailyGoal = 8;
+        let waterLog = [];
+        let lastDrink = null;
+        let containerSize = 250; // ml
+        let currentTheme = 'blue';
+        let soundEnabled = true;
+        
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+            loadData();
+            updateDisplay();
+            setCurrentDate();
+        });
+        
+        function setCurrentDate() {
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', options);
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            
+            // Create audio context for sound effects
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            if (type === 'drink') {
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+            } else if (type === 'goal') {
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1);
+                oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2);
+            }
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
+
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        function setTheme(theme) {
+            currentTheme = theme;
+            const body = document.getElementById('mainBody');
+            const title = document.getElementById('mainTitle');
+            
+            // Remove all theme classes
+            body.className = body.className.replace(/theme-\w+/g, '');
+            
+            // Add new theme
+            body.classList.add(`theme-${theme}`);
+            
+            // Update title color based on theme
+            if (theme === 'dark') {
+                title.className = 'text-3xl font-bold text-white mb-2';
+            } else {
+                title.className = 'text-3xl font-bold text-blue-900 mb-2';
+            }
+        }
+
+        function saveSettings() {
+            const goal = parseInt(document.getElementById('dailyGoalInput').value);
+            const unit = document.getElementById('goalUnit').value;
+            const size = parseInt(document.getElementById('containerSize').value);
+            const sound = document.getElementById('soundEffects').checked;
+            
+            dailyGoal = goal;
+            containerSize = size;
+            soundEnabled = sound;
+            
+            // Update display
+            document.getElementById('goalDisplay').textContent = goal;
+            document.getElementById('unitDisplay').textContent = unit;
+            
+            // Update button labels
+            updateButtonLabels();
+            
+            // Save to localStorage
+            const settings = {
+                dailyGoal,
+                containerSize,
+                currentTheme,
+                soundEnabled,
+                unit
+            };
+            localStorage.setItem('hydrationSettings', JSON.stringify(settings));
+            
+            // Hide settings panel
+            document.getElementById('settingsPanel').classList.add('hidden');
+            
+            // Update display
+            updateDisplay();
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('hydrationSettings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                dailyGoal = settings.dailyGoal || 8;
+                containerSize = settings.containerSize || 250;
+                currentTheme = settings.currentTheme || 'blue';
+                soundEnabled = settings.soundEnabled !== false;
+                
+                // Update UI
+                document.getElementById('dailyGoalInput').value = dailyGoal;
+                document.getElementById('containerSize').value = containerSize;
+                document.getElementById('soundEffects').checked = soundEnabled;
+                document.getElementById('goalDisplay').textContent = dailyGoal;
+                document.getElementById('unitDisplay').textContent = settings.unit || 'glasses';
+                
+                setTheme(currentTheme);
+                updateButtonLabels();
+            }
+        }
+
+        function updateButtonLabels() {
+            const containerName = getContainerName();
+            const containerIcon = getContainerIcon();
+            
+            document.getElementById('container1Icon').textContent = containerIcon;
+            document.getElementById('container1Unit').textContent = containerName;
+            document.getElementById('container1Size').textContent = containerSize + 'ml';
+            
+            document.getElementById('container2Icon').textContent = containerIcon;
+            document.getElementById('container2Unit').textContent = containerName + 's';
+            document.getElementById('container2Size').textContent = (containerSize * 2) + 'ml';
+        }
+
+        function getContainerName() {
+            if (containerSize <= 250) return 'Glass';
+            if (containerSize <= 350) return 'Can';
+            if (containerSize <= 600) return 'Bottle';
+            if (containerSize <= 800) return 'Large Bottle';
+            return 'Liter';
+        }
+
+        function getContainerIcon() {
+            if (containerSize <= 250) return '🥤';
+            if (containerSize <= 350) return '🥫';
+            if (containerSize <= 600) return '🍶';
+            if (containerSize <= 800) return '🍼';
+            return '🧴';
+        }
+        
+        function addWater(glasses) {
+            lastDrink = {
+                glasses: glasses,
+                time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+                ml: glasses * containerSize
+            };
+            
+            waterIntake += glasses;
+            waterLog.unshift(lastDrink);
+            
+            // Play sound effect
+            playSound('drink');
+            
+            // Add ripple effect
+            event.target.classList.add('ripple');
+            setTimeout(() => event.target.classList.remove('ripple'), 600);
+            
+            // Show undo button
+            showUndoButton();
+            
+            updateDisplay();
+            saveData();
+            
+            // Check if goal reached
+            if (waterIntake >= dailyGoal && waterIntake - glasses < dailyGoal) {
+                setTimeout(() => {
+                    playSound('goal');
+                    document.getElementById('bottleContainer').classList.add('refill-animation');
+                    setTimeout(() => {
+                        document.getElementById('bottleContainer').classList.remove('refill-animation');
+                    }, 1000);
+                    alert('🎉 Congratulations! You\'ve reached your daily hydration goal!');
+                }, 500);
+            }
+        }
+
+        function showUndoButton() {
+            const undoContainer = document.getElementById('undoContainer');
+            undoContainer.classList.remove('hidden');
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                undoContainer.classList.add('hidden');
+            }, 5000);
+        }
+
+        function undoLastDrink() {
+            if (lastDrink) {
+                waterIntake -= lastDrink.glasses;
+                waterLog.shift(); // Remove first item (most recent)
+                lastDrink = null;
+                
+                document.getElementById('undoContainer').classList.add('hidden');
+                updateDisplay();
+                saveData();
+            }
+        }
+        
+        function addCustomWater() {
+            const customInput = document.getElementById('customAmount');
+            const amount = parseFloat(customInput.value);
+            
+            if (amount && amount > 0) {
+                addWater(amount);
+                customInput.value = '';
+            }
+        }
+        
+        function updateDisplay() {
+            // Update main counter
+            document.getElementById('currentIntake').textContent = waterIntake.toFixed(1);
+            
+            // Update percentage
+            const percentage = Math.min((waterIntake / dailyGoal) * 100, 100);
+            document.getElementById('percentage').textContent = Math.round(percentage) + '%';
+            
+            // Update water bottle fill (starts full, empties as you drink)
+            const maxHeight = 140; // Maximum height of water in bottle
+            const remainingPercentage = Math.max(0, 100 - percentage);
+            const fillHeight = (remainingPercentage / 100) * maxHeight;
+            const waterFill = document.getElementById('waterFill');
+            const waterSurface = document.getElementById('waterSurface');
+            
+            if (waterFill && waterSurface) {
+                waterFill.style.height = fillHeight + 'px';
+                waterFill.style.y = (178 - fillHeight) + 'px';
+                waterSurface.style.cy = (178 - fillHeight) + 'px';
+                
+                // Hide surface if no water left
+                if (fillHeight === 0) {
+                    waterSurface.style.opacity = '0';
+                } else {
+                    waterSurface.style.opacity = '0.6';
+                }
+            }
+            
+            // Update total ml
+            document.getElementById('totalMl').textContent = Math.round(waterIntake * containerSize) + 'ml';
+            
+            // Update log
+            updateWaterLog();
+            
+            // Update streak (simplified - just shows if goal met today)
+            const streak = waterIntake >= dailyGoal ? 1 : 0;
+            document.getElementById('streak').textContent = streak;
+        }
+        
+        function updateWaterLog() {
+            const logContainer = document.getElementById('waterLog');
+            
+            if (waterLog.length === 0) {
+                logContainer.innerHTML = '<p class="text-gray-500 text-center py-4">No water logged yet today</p>';
+                return;
+            }
+            
+            logContainer.innerHTML = waterLog.map(entry => `
+                <div class="flex justify-between items-center py-2 px-3 bg-blue-50 rounded-lg">
+                    <span class="text-sm text-gray-700">${entry.glasses} ${getContainerName().toLowerCase()}${entry.glasses !== 1 ? 's' : ''} (${entry.ml}ml)</span>
+                    <span class="text-xs text-gray-500">${entry.time}</span>
+                </div>
+            `).join('');
+        }
+        
+        function resetDay() {
+            if (confirm('Are you sure you want to reset today\'s progress?')) {
+                waterIntake = 0;
+                waterLog = [];
+                lastDrink = null;
+                
+                // Hide undo button
+                document.getElementById('undoContainer').classList.add('hidden');
+                
+                // Immediately reset all display elements
+                document.getElementById('currentIntake').textContent = '0';
+                document.getElementById('percentage').textContent = '0%';
+                document.getElementById('totalMl').textContent = '0ml';
+                document.getElementById('streak').textContent = '0';
+                document.getElementById('waterLog').innerHTML = '<p class="text-gray-500 text-center py-4">No water logged yet today</p>';
+                
+                // Reset water bottle to full
+                const waterFill = document.getElementById('waterFill');
+                const waterSurface = document.getElementById('waterSurface');
+                
+                if (waterFill && waterSurface) {
+                    waterFill.setAttribute('height', '140');
+                    waterFill.setAttribute('y', '38');
+                    waterSurface.setAttribute('cy', '38');
+                    waterSurface.style.opacity = '0.6';
+                }
+                
+                // Save the reset data
+                saveData();
+            }
+        }
+        
+        function saveData() {
+            const today = new Date().toDateString();
+            const data = {
+                date: today,
+                intake: waterIntake,
+                log: waterLog
+            };
+            localStorage.setItem('hydrationTracker', JSON.stringify(data));
+        }
+        
+        function loadData() {
+            const today = new Date().toDateString();
+            const saved = localStorage.getItem('hydrationTracker');
+            
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (data.date === today) {
+                    waterIntake = data.intake || 0;
+                    waterLog = data.log || [];
+                }
+            }
+        }
+        
+        // Allow Enter key in custom input
+        document.getElementById('customAmount').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addCustomWater();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97c272d704298de9',t:'MTc1NzM3NjQ4MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
